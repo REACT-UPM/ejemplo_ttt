@@ -11,6 +11,15 @@
         button
             padding: 2rem
             background-color: #eee
+            transition: all 300ms ease
+            &:hover, 
+            &.selected
+                background-color: #ddd
+                transition: all 300ms ease
+            &.selected:hover
+                background-color: #ccc
+            &:hover
+                transform: scale(1.025)
     .game_footer
         p
         .buttons
