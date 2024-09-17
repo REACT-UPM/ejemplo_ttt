@@ -1,8 +1,18 @@
-# React + Vite
+# Tic tac toe in React
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Run it:
 
-Currently, two official plugins are available:
+```shell
+npm install
+npm run dev
+```
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+We covered:
+
+* Basic react stuff, like components, props, ect
+* Prop types and prop defaults
+* Alternative to prop types with Typescript
+* Install sass and use it
+* Create good module system
+* Create a custom hook
+* Persist and retrieve data through calling an API
