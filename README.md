@@ -16,3 +16,7 @@ We covered:
 * Create good module system
 * Create a custom hook
 * Persist and retrieve data through calling an API
+
+It should be like that:
+
+![alt text](./public/screenshot.png)
