@@ -1,5 +1,7 @@
-import { useEffect, useState } from "react";
-import { checkWinner } from "../utils";
+import { useCallback, useEffect, useState } from "react";
+import { checkWinner } from "../../utils";
+import { API_ENDPOINT, API_KEY } from "../../constants";
+import "./Game.sass";
 
 const Game = () => {
   const [matrix, setMatrix] = useState([
@@ -10,45 +12,39 @@ const Game = () => {
   const [turn, setTurn] = useState("0");
   const [moves, setMoves] = useState(0);
 
-  const fetchData = async () => {
-    const { gameState } = await fetch(
-      "https://api.jsonbin.io/v3/b/66e97e2bacd3cb34a8862286"
-    )
+  const fetchData = useCallback(async () => {
+    const { gameState } = await fetch(API_ENDPOINT)
       .then((d) => d.json())
       .then((d) => d.record);
     setMatrix(gameState.matrix);
     setTurn(gameState.turn);
     setMoves(gameState.moves);
-  };
+  }, []);
 
-  const persistData = async () => {
-    const data = await fetch(
-      "https://api.jsonbin.io/v3/b/66e97e2bacd3cb34a8862286",
-      {
-        method: "PUT",
-        headers: {
-          "X-Master-Key":
-            "$2a$10$m3SS1jBM6kTBZL.vGXVN/OpOLSNjxPuOnoY/HwDSMj2OKBdT3bPFe",
-          "Content-Type": "application/json",
+  const persistData = useCallback(async () => {
+    await fetch(API_ENDPOINT, {
+      method: "PUT",
+      headers: {
+        "X-Master-Key": API_KEY,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        gameState: {
+          turn: turn,
+          moves: moves,
+          matrix: matrix,
         },
-        body: JSON.stringify({
-          gameState: {
-            turn,
-            moves,
-            matrix,
-          },
-        }),
-      }
-    )
-      .then((d) => d.json())
-      .then((d) => d);
-
-    console.log(data);
-  };
+      }),
+    });
+  }, [turn, moves, matrix]);
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [fetchData]);
+
+  useEffect(() => {
+    persistData();
+  }, [matrix, moves, turn, persistData]);
 
   const updateMatrix = async (i, j) => {
     if (matrix[i][j] !== "-") {
@@ -63,10 +59,8 @@ const Game = () => {
       setTurn(turn == "0" ? "X" : "0");
       await persistData();
     } else {
-      setTimeout(() => {
-        confirm(`${turn} won`);
-        resetGame();
-      }, 1);
+      confirm(`${turn} won`);
+      await resetGame();
     }
   };
 
@@ -78,7 +72,6 @@ const Game = () => {
     ]);
     setTurn("0");
     setMoves(0);
-    await persistData();
   };
 
   return (
