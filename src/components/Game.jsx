@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { checkWinner } from "../utils";
 
 const Game = () => {
@@ -10,7 +10,47 @@ const Game = () => {
   const [turn, setTurn] = useState("0");
   const [moves, setMoves] = useState(0);
 
-  const updateMatrix = (i, j) => {
+  const fetchData = async () => {
+    const { gameState } = await fetch(
+      "https://api.jsonbin.io/v3/b/66e97e2bacd3cb34a8862286"
+    )
+      .then((d) => d.json())
+      .then((d) => d.record);
+    setMatrix(gameState.matrix);
+    setTurn(gameState.turn);
+    setMoves(gameState.moves);
+  };
+
+  const persistData = async () => {
+    const data = await fetch(
+      "https://api.jsonbin.io/v3/b/66e97e2bacd3cb34a8862286",
+      {
+        method: "PUT",
+        headers: {
+          "X-Master-Key":
+            "$2a$10$m3SS1jBM6kTBZL.vGXVN/OpOLSNjxPuOnoY/HwDSMj2OKBdT3bPFe",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          gameState: {
+            turn,
+            moves,
+            matrix,
+          },
+        }),
+      }
+    )
+      .then((d) => d.json())
+      .then((d) => d);
+
+    console.log(data);
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const updateMatrix = async (i, j) => {
     if (matrix[i][j] !== "-") {
       return;
     }
@@ -21,6 +61,7 @@ const Game = () => {
     const winner = checkWinner(matrix);
     if (!winner) {
       setTurn(turn == "0" ? "X" : "0");
+      await persistData();
     } else {
       setTimeout(() => {
         confirm(`${turn} won`);
@@ -29,7 +70,7 @@ const Game = () => {
     }
   };
 
-  const resetGame = () => {
+  const resetGame = async () => {
     setMatrix([
       ["-", "-", "-"],
       ["-", "-", "-"],
@@ -37,6 +78,7 @@ const Game = () => {
     ]);
     setTurn("0");
     setMoves(0);
+    await persistData();
   };
 
   return (
