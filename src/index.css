@@ -200,6 +200,7 @@ input[type="search"]::-webkit-search-decoration {
 *::before,
 *::after {
   box-sizing: border-box;
+  /* border: 1px solid tomato !important; */
 }
 
 html,
@@ -210,7 +211,7 @@ body {
   color: #333;
   min-height: 100vh;
 }
-
+/* 
 .container {
 }
 .header {
@@ -219,4 +220,6 @@ body {
   font-size: 2rem;
   font-weight: bold;
   margin: 1rem auto;
-}
+} 
+*/
+

@@ -3,6 +3,7 @@ import { checkWinner } from "../../utils";
 import { API_ENDPOINT, API_KEY } from "../../constants";
 
 export const useGame = () => {
+  const [alert, setAlert] = useState(false);
   const [gameState, setGameState] = useState({
     matrix: [
       ["-", "-", "-"],
@@ -68,20 +69,27 @@ export const useGame = () => {
     const newMatrix = [...gameState.matrix];
     newMatrix[i][j] = gameState.turn;
     const winner = checkWinner(gameState.matrix);
-    setGameState((oldGameState) => ({
-      matrix: [...newMatrix],
-      turn: oldGameState.turn == "0" ? "X" : "0",
-      moves: oldGameState.moves + 1,
-    }));
 
-    if (!winner) {
-      await persistData();
+    if (winner) {
+      setAlert(true)
+      setGameState((oldGameState) => ({
+        ...oldGameState,
+        matrix: [...newMatrix],
+        // turn: oldGameState.turn == "0" ? "X" : "0",
+        moves: oldGameState.moves + 1,
+      }));
     } else {
-      setTimeout(() => {
-        confirm(`${gameState.turn} won`);
-      }, 10);
-      await resetGame();
+      setGameState((oldGameState) => ({
+        matrix: [...newMatrix],
+        turn: oldGameState.turn == "0" ? "X" : "0",
+        moves: oldGameState.moves + 1,
+      }));
     }
+
+ 
+
+    await persistData();
+
   };
 
   /**
@@ -97,11 +105,14 @@ export const useGame = () => {
       turn: "0",
       moves: 0,
     });
+    setAlert(false)
   };
 
   return {
     gameState,
     resetGame,
     updateMatrix,
+    alert,
+    setAlert
   };
 };
